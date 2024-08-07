@@ -1,0 +1,148 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}{{ request.user.name }}{% endblock %}
+{% block content %}
+    
+   <div class="profile">
+    <div class="image">
+      {% if userdata.image %}
+      <img src="{{userdata.image.url}}" alt="logo" class="img-thumbnail" loading="lazy">
+      {% else %}
+    <img src="{% static 'images/profile pic.jpg' %}" alt="logo" class="img-thumbnail" loading="lazy">
+    {% endif %}
+    <br>
+    {% if user.user_id == userdata.user_id %}
+    <button type="button" class="btn btn-secondary mt-2" 
+    data-bs-toggle="modal" 
+    data-bs-target="#profileModal"
+    data-profile-name="{{ user.name }}"
+    data-profile-email="{{ user.email }}"
+    data-profile-image="{{ user.image }}"
+    data-profile-description="{{ user.description }}"
+    data-profile-facebook="{{ user.facebook }}"
+    data-profile-linkedin="{{ user.linkedin }}"
+    data-profile-instagram="{{ user.instagram }}"
+    data-profile-twitter="{{ user.twitter }}"
+    data-profile-skype="{{ user.skype }}"
+    data-profile-user-id="{{ user.user_id }}">
+Edit Profile
+</button>
+{% endif %}
+    <div class="icons m-3">
+{% if userdata.facebook %}
+        <a
+      data-mdb-ripple-init
+        class="btn text-white btn-floating m-1"
+        style="background-color: #3b5998;"
+        href="{{userdata.facebook}}"
+        role="button"
+        ><i class="fab fa-facebook-f"></i
+      ></a>
+{% endif %}
+      <!-- Twitter -->
+      {% if userdata.twitter %}
+      <a
+        data-mdb-ripple-init
+        class="btn text-white btn-floating m-1"
+        style="background-color: #55acee;"
+        href="{{userdata.twitter}}"
+        role="button"
+        ><i class="fab fa-twitter"></i
+      ></a>
+      {% endif %}
+
+      {% if userdata.skype %}
+      <a
+        data-mdb-ripple-init
+        class="btn text-white btn-floating m-1"
+        style="background-color: #dd4b39;"
+        href="{{userdata.skype}}"
+        role="button"
+        ><i class="fa-brands fa-skype"></i></a>
+        {% endif %}
+      <!-- Instagram -->
+      {% if userdata.instagram %}
+      <a
+        data-mdb-ripple-init
+        class="btn text-white btn-floating m-1"
+        style="background-color: #ac2bac;"
+        href="{{userdata.instagram}}"
+        role="button"
+        ><i class="fab fa-instagram"></i
+      ></a>
+      {% endif %}
+      <!-- Linkedin -->
+      {% if userdata.linkedin %}
+      <a
+        data-mdb-ripple-init
+        class="btn text-white btn-floating m-1"
+        style="background-color: #0082ca;"
+        href="{{userdata.linkedin}}"
+        role="button"
+        ><i class="fab fa-linkedin-in"></i
+      ></a>
+      <!-- Github -->
+      {% endif %}
+    </div>
+    <div class="info">
+
+    <span class="username">{{userdata.name}}</span><br>
+    <span class="role">{{userdata.role}}</span>   
+</div>
+</div>
+{% if userdata.description %}
+<div class="about">
+    <h4>About</h4>
+    <p>
+      {{userdata.description}}
+    </p>
+</div>
+{% endif %}
+{% if user.role != 'user' %}
+    <div class="text-center text-light p-3 m-3 total-posts">
+        <h3>Total Posts</h3>
+        <hr>
+        <p>{{total_count}}</p>
+    </div>
+    <div class="text-center text-light p-3 m-3 articles">
+        <h3>Articles</h3>
+        <hr>
+        <p>{{total_articles}}</p>
+    </div>
+    <div class="text-center text-light p-3 m-3 latest-news">
+        <h3>News</h3>
+        <hr>
+        <p>{{total_news}}</p>
+    </div>
+    <div class="text-center text-light p-3 m-3 headlines">
+        <h3>Headlines</h3>
+        <hr>
+        <p>{{total_headlines}}</p>
+    </div>
+    {% endif %}
+
+    <div class="news-advertisement w-100">
+      {% if news_sorted %}
+        <h4>News</h4>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+{% for news in news_sorted %}
+            <div class="col">
+              <a class="card h-100" href="{% url news.class_name news.slug %}">
+                <img src="{{news.image.url}}" class="card-img-top skeleton" alt="{{news.title | truncatechars:20}}" loading="lazy">
+                <div class="card-body skeleton">
+                  <h5 class="card-title skeleton">{{news.title | truncatechars:50}}</h5>
+                  <p class="card-text skeleton">{{news.content | truncatechars:100}}</p>
+                </div>
+                <div class="card-footer">
+                  <small class="text-body-secondary skeleton">{{news.publish_date}}</small>
+                </div>
+              </a>
+            </div>
+ {% endfor %}           
+          </div>
+          {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

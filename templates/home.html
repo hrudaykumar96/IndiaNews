@@ -1,0 +1,424 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- font-awesome link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="{% static 'images/logo.jpg' %}" type="image/x-icon">
+
+    <title>{% block title %}{% if selected_category %}India News - {{ selected_category.name }}{% else %}India News{% endif %}{% endblock %}</title>
+
+</head>
+<body>
+
+    <!-- header section start -->
+    
+    <section class="header">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'images/logo.jpg' %}" alt="logo" loading="lazy">
+            <span class="first text-danger">India</span>
+            <span class="last text-secondary">News</span>
+          </a>
+    
+          <!-- Navbar Toggler Button -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- Navbar Links and Dropdown -->
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+              {% if not user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" data-bs-toggle="modal" data-bs-target="#loginformModal">Login</a>
+              </li>
+              {% else %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-capitalize" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{request.user.name}}
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#resetformModal">Change Password</a></li>
+                  <li><a class="dropdown-item" href="{% url 'profile' user_id=user.user_id %}">Profile</a></li>
+                  <li><a class="dropdown-item" href="{% url 'signout' %}">Logout</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    
+      <!-- Categories Navbar (if categories exist) -->
+      {% if category %}
+      <nav class="navbar navbar-expand-lg nav-section">
+        <div class="container">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+    
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav justify-content-center nav-pills nav-fill">
+              {% for category in category %}
+              <li class="nav-item">
+                <a class="nav-link {% if category.slug == current_category_slug %}active{% endif %} text-capitalize"
+                  href="{% url 'get_news_bycategory' slug=category.slug %}">
+                  {{ category.name }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </nav>
+      {% endif %}
+    </section>    
+
+    <!-- header section end -->
+
+    <!-- alerts start -->
+
+    <div class="position-fixed top-0 end-0 p-3 d-flex justify-content-center align-items-center w-100" style="z-index: 11">
+      {% if messages %}
+          {% for message in messages %}
+              <div class="toast align-items-center text-bg-{{message.tags}} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                  <div class="d-flex">
+                      <div class="toast-body">
+                          {{ message }}
+                      </div>
+                      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                  </div>
+              </div>
+          {% endfor %}
+      {% endif %}
+  </div>
+
+    <!-- alert end -->
+
+    <!-- news section start -->
+
+    <section class="news">
+
+    <!-- marquee for headlines start -->
+
+    {% if news_sorted %}
+      <marquee behavior="scroll" direction="left" class="text-light bg-danger">
+        {% for content in news_sorted %}
+          {{ content.content }}
+        {% endfor %}
+      </marquee>
+      {% endif %}  
+
+  
+    <!-- marquee for headlines end -->
+    
+    <!-- sidebar section start -->
+
+<div class="nav-search">
+  {% if user.role == 'admin' or user.role == 'editor' %}
+    <nav class="navbar ">
+      <div class="container-fluid">
+        <!-- Toggle button for offcanvas menu -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Offcanvas menu -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><span class="first text-danger">India</span><span class="last text-secondary">News</span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#categoryformModal">Add Category</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#latestnewsModal">Post Latest News</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#headlinesformModal">Post Headline</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#articlesformModal">Post Article</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'news_management' %}">News Management</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#trendingnewsModal">Post Trending News</a>
+              </li>
+              {% if user.role == "admin" %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'category_management' %}">Category Management</a>
+              </li>
+              {% if user.role == "admin" %}
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#adminsignupformModal">Create Editor</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+    <!-- search form -->
+{% block search %}
+    <form action="{% url 'home' %}" method="get" class="search">
+      <input type="search" name="news" class="form-control me-2" placeholder="Search">
+      <input type="submit" value="Search" class="btn btn-outline-success">
+    </form>
+{% endblock %}
+  </div>
+
+    <!-- sidebar section end -->
+    
+
+    {% block category_title %}
+    {% if selected_category.name %}
+    <h3 class="m-3 text-center text-capitalize">{{selected_category.name}}</h3>
+    {% endif %}
+    {% endblock %}
+
+    {% block content %}
+    
+        <!-- bootstrap carousel start -->
+
+        {% if latest_news %}
+
+<h4 class="text-center p-3">Latest News</h4>
+        <div id="carouselExampleCaptions" class="carousel slide">
+            <div class="carousel-inner">
+              {% for latest_news in latest_news %}
+              <div class="carousel-item  {% if forloop.first %}active{% endif %}">
+                <a href="{% url 'Latest_News' slug=latest_news.slug %}"><img src="{{latest_news.image.url}}" class="d-block w-100" alt="{{latest_news.title | truncatechars:20}}" loading="lazy"></a>
+                <div class="carousel-caption d-none d-md-block">
+                  <h5 class="text-capitalize">{{latest_news.title | truncatechars:50 }}</h5>
+                  <p>{{latest_news.content | truncatechars:100}}</p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+          {% endif %}
+          
+        <!-- bootstrap carousel end -->
+
+        {% if not news_sorted and not latest_news and not trending_news and not headlines and not articles and not advertisements %}
+        <p class="text-danger text-center">No Content Found</p>
+    {% endif %}
+    
+        
+        <!-- trending news start -->
+
+{% if trending_news %}
+
+<div class="trending container">
+  <h4 class="text-center m-3">Trending News</h4>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for trending_news in trending_news %}
+    <div class="col">
+      <a href="{% url 'Trending_News' slug=trending_news.slug %}" class="card">
+        <div class="card-body">
+          <h5 class="card-title text-capitalize skeleton">{{trending_news.title | truncatechars:50 }}</h5>
+          <p class="card-text skeleton">{{trending_news.content | truncatechars:100 }}</p>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+      <!-- trending news end -->
+
+        <!-- bootstrap cards scroll for news headlines -->
+
+{% if headlines %}
+        <h4 class="text-center p-3">Headlines</h4>
+  <div class="scroll">
+    <div class="scrolling-wrapper container">
+        <button id="prevBtn" class="nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="cards-container">
+          {% for headlines in headlines %}
+            <div class="card">
+                <img src="{{headlines.image.url}}" class="card-img-top skeleton" alt="{{headlines.title | truncatechars:20}}" loading="lazy">
+                <div class="card-body">
+                    <h5 class="card-title text-capitalize skeleton">{{headlines.title | truncatechars:50}}</h5>
+                    <p class="card-text skeleton">{{headlines.content | truncatechars:100}}</p>
+                    <p class="card-text skeleton"><small>{{headlines.publish_date | date:"F j, Y, g:i A"}}</small></p>
+                    <a href="{% url 'Headlines' slug=headlines.slug %}" class="btn btn-primary skeleton">More</a>
+                </div>
+            </div>
+          {% endfor %}
+        </div>
+        <button id="nextBtn" class="nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+{% endif %}
+
+        <!-- bootstrap cards scroll end-->
+
+        <!-- articles section start -->
+
+{% if articles %}
+        <div class="articles">
+          <h4 class="text-center m-3">News Articles</h4>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              {% for article in articles %}
+                <a href="{% url 'Articles' slug=article.slug %}" class="col">
+                  <div class="card h-100">
+                    <img src="{{article.image.url}}" class="card-img-top skeleton" alt="{{article.title | truncatechars:20}}" loading="lazy">
+                    <div class="card-body">
+                      <h5 class="card-title text-capitalize skeleton">{{article.title | truncatechars:50}}</h5>
+                      <p class="card-text skeleton">{{article.content | truncatechars:100}}</p>
+                    </div>
+                    <div class="card-footer">
+                      <small class="text-body-secondary skeleton">{{article.publish_date | date:"F j, Y, g:i A"}}</small>
+                    </div>
+                  </div>
+                </a>
+                {% endfor %}
+              </div>
+        </div>
+{% endif %}
+
+        <!-- articles section end -->
+       
+
+    </section>
+
+    <!-- news section end -->
+
+    {% endblock %}
+
+<!-- include forms start -->
+
+{% include "adminsignup.html" %}
+{% include "articlesform.html" %}
+{% include "categoryform.html" %}
+{% include "headlinesform.html" %}
+{% include "latestnewsform.html" %}
+{% if not user.is_authenticated %}
+{% include "loginform.html" %}
+{% endif %}
+{% include "signupform.html" %}
+{% include "passwordchange.html" %}
+{% include "trendingnewsform.html" %}
+{% include "delete.html" %}
+{% include "userupdateform.html" %}
+{% include "updatenewsform.html" %}
+{% include "spinner.html" %}
+{% include "updateprofile.html" %}
+
+<!-- include forms end -->
+
+
+
+    <!-- footer section start -->
+    
+    <section class="footer">
+        <footer class="text-center bg-body-tertiary">
+            <!-- Grid container -->
+            <div class="container pt-4">
+              <!-- Section: Social media -->
+              <section class="mb-4">
+                <!-- Facebook -->
+                <a
+                  data-mdb-ripple-init
+                  class="btn btn-link btn-floating btn-lg text-body m-1"
+                  href="#!"
+                  role="button"
+                  data-mdb-ripple-color="dark"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+          
+                <!-- Twitter -->
+                <a
+                  data-mdb-ripple-init
+                  class="btn btn-link btn-floating btn-lg text-body m-1"
+                  href="#!"
+                  role="button"
+                  data-mdb-ripple-color="dark"
+                  ><i class="fab fa-twitter"></i
+                ></a>
+          
+                <!-- Instagram -->
+                <a
+                  data-mdb-ripple-init
+                  class="btn btn-link btn-floating btn-lg text-body m-1"
+                  href="#!"
+                  role="button"
+                  data-mdb-ripple-color="dark"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+          
+                <!-- Linkedin -->
+                <a
+                  data-mdb-ripple-init
+                  class="btn btn-link btn-floating btn-lg text-body m-1"
+                  href="#!"
+                  role="button"
+                  data-mdb-ripple-color="dark"
+                  ><i class="fab fa-linkedin"></i
+                ></a>
+                <!-- Github -->
+                <a
+                  data-mdb-ripple-init
+                  class="btn btn-link btn-floating btn-lg text-body m-1"
+                  href="#!"
+                  role="button"
+                  data-mdb-ripple-color="dark"
+                  ><i class="fab fa-github"></i
+                ></a>
+              </section>
+              <!-- Section: Social media -->
+            </div>
+            <!-- Grid container -->
+          
+            <!-- Copyright -->
+            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+              CopyRight © All Rights Reserved
+            </div>
+            <!-- Copyright -->
+          </footer>
+    </section>
+
+    <!-- footer section end -->
+
+    <!-- bootstrap js -->
+    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+
+    <!-- custom js -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

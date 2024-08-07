@@ -1,0 +1,82 @@
+{% extends 'home.html' %}
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+    <!-- user management start -->
+    {% block search %}
+    {% endblock %}
+    <div class="admin">
+      <h3 class="text-center m-3">User Management</h3>
+  
+      <!-- Form for filtering -->
+      <form method="GET" action="{% url 'user_management' %}" id="filterForm">
+          <div class="table-responsive">
+              <table class="table table-striped table-hover table-bordered text-center">
+                  <thead>
+                      <tr>
+                          <th scope="col">Name
+                              <div class="m-3">
+                                  <input type="search" class="form-control" placeholder="Search Name" name="name" value="{{ request.GET.name }}">
+                              </div>
+                          </th>
+                          <th scope="col">Email
+                              <div class="m-3">
+                                  <input type="search" class="form-control" placeholder="Search Email" name="email" value="{{ request.GET.email }}">
+                              </div>
+                          </th>
+                          <th scope="col">Role
+                              <div class="m-3">
+                                  <select class="form-select" aria-label="Default select example" name="role">
+                                      <option value="">All</option>
+                                      <option value="admin" {% if request.GET.role == 'admin' %}selected{% endif %}>Admin</option>
+                                      <option value="user" {% if request.GET.role == 'user' %}selected{% endif %}>User</option>
+                                      <option value="editor" {% if request.GET.role == 'editor' %}selected{% endif %}>Editor</option>
+                                  </select>
+                              </div>
+                          </th>
+                          <th scope="col">Joined on
+                              <div class="form-group">
+                                  <div class="form-floating m-3">
+                                      <input type="date" class="form-control" id="floatingInput" name="from_date" value="{{ request.GET.from_date }}">
+                                      <label for="floatingInput">From</label>
+                                  </div>
+                                  <div class="form-floating">
+                                      <input type="date" class="form-control" id="floatingPassword" name="to_date" value="{{ request.GET.to_date }}">
+                                      <label for="floatingPassword">To</label>
+                                  </div>
+                              </div>
+                          </th>
+                          <th scope="col">Action
+                              <div class="m-3">
+                                  <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                              </div>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% if users %}
+                      {% for user in users %}
+                      <tr>
+                          <td class="text-capitalize">{{ user.name }}</td>
+                          <td>{{ user.email }}</td>
+                          <td class="text-capitalize">{{user.role}}</td>
+                          <td>{{ user.date_joined|date:"F j, Y, g:i A" }}</td>
+                          <td>
+                              <button type="button" class="btn btn-warning" user-slug="{{user.slug}}" user-name="{{user.name}}" 
+                              user-email='{{user.email}}' user-superuser="{{user.is_superuser}}" user-staff='{{user.is_staff}}' user-role="{{user.role}}" data-bs-toggle="modal" data-bs-target="#userupdateModal" onclick="userform(this)"><i class="fas fa-pen"></i></button>
+                              <button type="button" class="btn btn-danger" data-slug="{{ user.slug }}" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="delete_user(this)"><i class="fas fa-trash"></i></button>
+                          </td>
+                      </tr>
+                      {% endfor %}
+                      {% else %}
+                      <p class="text-center text-danger">No Users Found</p>
+                      {% endif %}
+                  </tbody>
+              </table>
+          </div>
+      </form>
+  </div>  
+    
+    <!-- user management end -->
+
+    {% endblock %}

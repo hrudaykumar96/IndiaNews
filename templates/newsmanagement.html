@@ -1,0 +1,120 @@
+{% extends 'home.html' %}
+{% block title %}News Management{% endblock %}
+{% block content %}
+    <!-- news management start -->
+    {% block search %}
+    {% endblock %}
+    <div class="admin">
+      <form method="get" action="{% url 'news_management' %}">
+      <div class="total mb-5">
+        {% if user.role == "editor" %}
+          <div class="text-center text-light p-3 m-3 total-posts">
+              <h3>Total Posts</h3>
+              <hr>
+              <p>{{ total_count }}</p>
+          </div>
+          {% endif %}
+          {% if user.role == "admin" %}
+          <div class="text-center text-light p-3 m-3 total-posts">
+              <h3>Total News</h3>
+              <hr>
+              <p>{{ total_count }}</p>
+          </div>
+          {% endif %}
+          <div class="text-center text-light p-3 m-3 articles">
+              <h3>Articles</h3>
+              <hr>
+              <p>{{ total_articles }}</p>
+          </div>
+          <div class="text-center text-light p-3 m-3 latest-news">
+              <h3>News</h3>
+              <hr>
+              <p>{{ total_latest_news }}</p>
+          </div>
+          <div class="text-center text-light p-3 m-3 headlines">
+              <h3>Headlines</h3>
+              <hr>
+              <p>{{ total_headline }}</p>
+          </div>
+      </div>
+      <h3 class="text-center m-3">News Management</h3>
+      
+      <!-- Table container -->
+       
+          <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover text-center">
+                  <thead>
+                      <tr>
+                          <th scope="col">
+                              Title
+                              <div class="mb-3 mt-3">
+                                  <input type="search" name="title" class="form-control" placeholder="Search Title">
+                              </div>
+                          </th>
+                          <th scope="col">
+                              Category
+                              <div class="mb-3 mt-3">
+                                  <select class="form-select" name="category" aria-label="Default select example">
+                                      <option selected></option>
+                                      {% for category in category %}
+                                      <option value="{{ category.id }}">{{ category.name }}</option>
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                          </th>
+                          <th scope="col">
+                              Published Date
+                              <div class="form-group">
+                                  <div class="form-floating mb-3 mt-3">
+                                      <input type="date" name="date_from" class="form-control" id="floatingInput">
+                                      <label for="floatingInput">From</label>
+                                  </div>
+                                  <div class="form-floating mb-3 mt-3">
+                                      <input type="date" name="date_to" class="form-control" id="floatingPassword">
+                                      <label for="floatingPassword">To</label>
+                                  </div>
+                              </div>
+                          </th>
+                          <th scope="col">
+                            Created By
+                            <div class="mb-3 mt-3">
+                                <input type="search" name="news_user" class="form-control" placeholder="Search User">
+                            </div>
+                        </th>
+                          <th scope="col">
+                              Action
+                              <div class="mb-3 mt-3">
+                                  <button type="submit" class="btn btn-secondary">
+                                      <i class="fa-solid fa-magnifying-glass"></i> Search
+                                  </button>
+                              </div>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% if news %}
+                          {% for news_item in news %}
+                          <tr>
+                              <td scope="row" class="text-capitalize">{{ news_item.title | truncatechars:40 }}</td>
+                              <td class="text-capitalize">{{ news_item.category }}</td>
+                              <td>{{ news_item.publish_date | date:"F j, Y, g:i A" }}</td>
+                              <td class="text-capitalize">{{news_item.user.name}}</td>
+                              <td>
+                                  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updatenewsModal" newsdata-title="{{news_item.title}}" newsdata-description="{{news_item.description}}" newsdata-category="{{news_item.category.id}}" newsdata-image="{{news_item.image}}" newsdata-slug="{{news_item.slug}}" onclick="updatenews(this)"><i class="fas fa-pen"></i></button>
+                                  <a class="btn btn-success" href="{% url news_item.class_name news_item.slug %}"><i class="fa-solid fa-eye"></i></a>
+                                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="delete_news('{{news_item.slug}}')"><i class="fas fa-trash"></i></button>
+                              </td>
+                          </tr>
+                          {% endfor %}
+                      {% else %}
+                          <p class="text-danger text-center m-3">No Content Found</p>
+                      {% endif %}
+                  </tbody>
+              </table>
+          </div>
+      </form>
+  </div>  
+
+    <!-- news management end -->
+
+    {% endblock %}

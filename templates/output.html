@@ -1,0 +1,136 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}{{ news.slug }}{% endblock %}
+{% block content %}
+    <!-- Full articles shown here -->
+    <div class="output">
+      <!-- Display Latest_News Details -->
+      <div class="card mb-3">
+          <img src="{{ news.image.url }}" class="card-img-top img-fluid" alt="{{ news.title }}">
+          <div class="card-body">
+              <h5 class="card-title">{{ news.title }}</h5>
+              <p class="card-text">{{ news.description|safe }}</p>
+              <p class="card-text">
+                  <small class="text-muted">{{ news.publish_date|date:"F j, Y, g:i A" }}</small>
+              </p>
+              {% if news.user.image %}
+                            <a href="{% url 'profile' news.user.user_id %}"><img src="{{news.user.image.url}}" alt="{{comment.user.name}}" loading="lazy"></a>
+                            {% else %}
+                              <a href="{% url 'profile' news.user.user_id %}"><i class="fa-solid fa-user"></i></a>
+                              {% endif %}
+              <a href="{% url 'profile' user_id=news.user.user_id %}" class="text-capitalize text-dark">{{news.user.name}}</a>
+          </div>
+      </div>
+
+      <!-- Add New Comment -->
+      <div class="comment-section container">
+          <h5>Add a Comment:</h5>
+                  {% include "comments.html" %}
+                  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#commentsModal">Add Comment</button>
+
+          <!-- Comments List -->
+          <h5 class="m-3">Comments:</h5>
+          {% if comments %}
+              <ul class="list-group list-group-flush">
+                  {% for comment in comments %}
+                      <li class="list-group-item position-relative">
+                          <div class="comment">
+                            {% if comment.user.image %}
+                            <a href="{% url 'profile' comment.user.user_id %}"><img src="{{comment.user.image.url}}" alt="{{comment.user.name}}" loading="lazy"></a>
+                            {% else %}
+                              <a href="{% url 'profile' comment.user.user_id %}"><i class="fa-solid fa-user"></i></a>
+                              {% endif %}
+                              <div class="text-comment">
+                              <a href="{% url 'profile' comment.user.user_id %}"><strong class="text-capitalize text-dark">{{ comment.user.name }}</strong></a>
+                              <p>{{ comment.text }}</p>
+                              </div>
+                            </div>
+
+                              <div class="dropdown position-absolute top-0 end-0 pt-3 pe-3">
+                                <a class="btn dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                </a>
+                              
+                                <ul class="dropdown-menu">
+                                  <li>
+                                    <a type="button" data-bs-toggle="modal" 
+                                    comment-slug="{{news.slug}}" 
+                                    comment-id="{{comment.id}}" 
+                                    data-bs-target="#replyformModal"
+                                    class="dropdown-item"
+                                    onclick="reply(this)">
+                                    Reply
+                                 </a>
+                                  </li>
+                                  {% if request.user == comment.user %}
+                                  <li><a class="dropdown-item" href="{% url 'delete_comment' id=comment.id %}">Delete</a></li>
+                                  <li><a class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#updateModal{{ forloop.counter }}">Edit</a></li>
+                                  {% endif %}
+                                </ul>
+                              </div>
+                              {% if comment.replies %}
+                              <a type="button" data-bs-toggle="collapse" class="text-primary" data-bs-target="#collapse-{{ comment.id }}" aria-expanded="false" aria-controls="collapse-{{ comment.id }}">Replies</a>
+                              {% endif %}
+                              <!-- Replies Section -->
+                              <div class="collapse" id="collapse-{{ comment.id }}">
+                                <div class="card card-body">
+                                    <div class="replies">
+                                        {% if comment.replies %}
+                                            <ul class="list-group list-group-flush">
+                                                {% for reply in comment.replies %}
+                                                    <li class="list-group-item">
+                                                        <div class="reply">
+                                                            <div class="comment">
+                                                                {% if reply.user.image %}
+                                                                <a href="{% url 'profile' reply.user.user_id %}"><img src="{{reply.user.image.url}}" alt="{{reply.user.name}}" loading="lazy"></a>
+                                                                {% else %}
+                                                            <a href="{% url 'profile' reply.user.user_id %}"><i class="fa-solid fa-user"></i></a>
+                                                            {% endif %}
+                                                            <div class="text-comment">
+                                                            <a href="{% url 'profile' reply.user.user_id %}"><strong class="text-capitalize text-dark">{{ reply.user.name }}</strong></a>
+                                                            <p>{{ reply.text }}</p>
+                                                        </div>
+                                                    </div>
+                                                            <div class="dropdown position-absolute top-0 end-0 pt-3 pe-3">
+                                                                <a class="btn dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                </a>
+                                                              
+                                                                <ul class="dropdown-menu">
+                                                                  <li>
+                                                                    <a type="button" data-bs-toggle="modal" 
+                                                                    comment-slug="{{news.slug}}" 
+                                                                    comment-id="{{comment.id}}" 
+                                                                    data-bs-target="#replyformModal"
+                                                                    class="dropdown-item"
+                                                                    onclick="reply(this)">
+                                                                    Reply
+                                                                 </a>
+                                                                  </li>
+                                                                  {% if request.user == reply.user %}
+                                                                  <li><a class="dropdown-item" href="{% url 'delete_reply' id=reply.id %}">Delete</a></li>
+                                                                  <li><a class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#updateModalReply{{reply.id}}">Edit</a></li>
+                                                                  {% endif %}
+                                                                </ul>
+                                                              </div>
+                                                        </div>
+                                                        {% include "replyupdateform.html" %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                              </div>
+                          </span>
+                      </li>
+                      {% include "updateform.html" %}
+                  {% endfor %}
+              </ul>
+          {% else %}
+              <p class="text-center text-danger">No Comments Found</p>
+          {% endif %}
+      </div>
+      {% include "replyform.html" %}
+      
+  </div>
+    <!-- Full articles shown here end -->
+{% endblock %}

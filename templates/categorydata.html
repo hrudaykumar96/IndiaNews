@@ -1,0 +1,40 @@
+
+{% extends 'home.html' %}
+{% block title %}
+{{selected_category.name}}
+{% endblock %}
+{% block search %}
+<form action="{% url 'home' %}" method="get" class="search">
+  <input type="search" name="news" class="form-control me-2" placeholder="Search">
+  <input type="submit" value="Search" class="btn btn-outline-success">
+</form>
+{% endblock %}
+{% block category_title %}
+<h4 class="text-center  m-3">{{current_category.name}}</h4>
+
+{% endblock %}
+  
+   {% block content %}
+    <div class="category-news container mb-3">
+      {% if news_sorted %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for news in news_sorted %}
+            <a class="col" href="{% url news.class_name news.slug %}">
+              <div class="card h-100">
+                <img src="{{news.image.url}}" class="card-img-top skeleton" alt="" loading="lazy">
+                <div class="card-body">
+                  <h5 class="card-title skeleton">{{news.title | truncatechars:50}}</h5>
+                  <p class="card-text skeleton">{{news.content | truncatechars:100}}</p>
+                </div>
+                <div class="card-footer">
+                  <small class="text-body-secondary skeleton">{{news.publish_date | date:"F j, Y, g:i A"}}</small>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-danger text-center m-3">No Content Found</p>
+          {% endif %}
+    </div>
+    {% endblock %}

@@ -1,0 +1,55 @@
+<!-- latest news form start -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="latestnewsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <form action="{% url 'create_latest_news' %}" method="post" enctype="multipart/form-data" id="latestnews-form">{% csrf_token %}
+          {{ Latest_News_Form.media }}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Latest News</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancel"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ Latest_News_Form.title.id_for_label }}" class="form-label">{{ Latest_News_Form.title.label }}</label><span class="text-danger">*</span>
+          {{Latest_News_Form.title}}
+          <small class="text-danger" id="latest_news-titleerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Latest_News_Form.description.id_for_label }}" class="form-label">{{ Latest_News_Form.description.label }}</label><span class="text-danger">*</span>
+          {{Latest_News_Form.description}}
+          <small class="text-danger" id="latest_news-descriptionerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Latest_News_Form.image.id_for_label }}" class="form-label">{{ Latest_News_Form.image.label }}</label><span class="text-danger">*</span>
+          {{Latest_News_Form.image}}
+          <small class="text-danger" id="latest_news-imageerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Latest_News_Form.category.id_for_label }}" class="form-label">{{ Latest_News_Form.category.label }}</label><span class="text-danger">*</span>
+          {{Latest_News_Form.category}}
+          <small class="text-danger" id="latestnewscategoryerror"></small>
+          </div>
+          <div class="mb-3 terms_and_conditions">
+            <strong>Disclaimer:</strong>
+            <p class="text-justify">
+               The website owner does not verify the accuracy or reliability of news articles posted on this website. Administrators are solely responsible for ensuring the accuracy and reliability of the information they publish. Administrators bear full responsibility for any inaccuracies or misleading content in the articles they submit.
+            </p>
+            {{Latest_News_Form.is_acknowledge}}
+            <label class="form-check-label"><span class="text-danger">*</span>
+              I acknowledge that I have reviewed the disclaimer and hereby accept its terms and conditions.
+            </label><br>
+            <small class="text-danger" id="latestnewscheckerror"></small>          
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Post News</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+        <!-- latest news form end -->

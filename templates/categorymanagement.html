@@ -1,0 +1,41 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}Category Management{% endblock %}
+    {% block content %}
+    <!-- category management start -->
+    {% block search %}
+    {% endblock %}
+    <div class="category-management">
+      {% if category %}
+        <h3 class="text-center">Category Management</h3>
+            <table class="table table-bordered table-striped table-hover text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Created By</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for category in category %}
+                  <tr>
+                    <td scope="row" class="text-capitalize">{{category.name}}</td>
+                    <td class="text-capitalize">{{category.user.name}}</td>
+                    <td>{{category.created | date:"F j, Y, g:i A"}}</td>
+                    <td><button type="button" class="btn btn-secondary" data-slug="{{category.slug}}" data-name="{{category.name}}" data-bs-toggle="modal" data-bs-target="#categoryformModal" onclick="editcategory(this)"><i class="fa-regular fa-pen-to-square"></i></button>
+                      {% if user.role == "admin" %}
+                      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash" onclick="delete_category('{{category.slug}}')"></i></button>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% else %}
+              <p class="text-center text-danger">No Category Found</p>
+              {% endif %}
+    </div>
+
+    <!-- category management end -->
+    {% endblock %}

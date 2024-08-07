@@ -1,0 +1,55 @@
+        <!-- headlines form start -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="headlinesformModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <form action="{% url 'create_headline' %}" method="post" enctype="multipart/form-data" id="headline-form">{% csrf_token %}
+          {{ Headline_Form.media }}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Headlines</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancel"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ Headline_Form.title.id_for_label }}" class="form-label">{{ Headline_Form.title.label }}</label><span class="text-danger">*</span>
+          {{Headline_Form.title}}
+          <p class="text-danger" id="headlinetitleerror"></p>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Headline_Form.description.id_for_label }}" class="form-label">{{ Headline_Form.description.label }}</label><span class="text-danger">*</span>
+          {{Headline_Form.description}}
+          <p class="text-danger" id="headlinedescriptionerror"></p>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Headline_Form.image.id_for_label }}" class="form-label">{{ Headline_Form.image.label }}</label><span class="text-danger">*</span>
+          {{Headline_Form.image}}
+          <p class="text-danger" id="headlinefileerror"></p>
+          </div>
+          <div class="mb-3">
+            <label for="{{ Headline_Form.category.id_for_label }}" class="form-label">{{ Headline_Form.category.label }}</label><span class="text-danger">*</span>
+          {{Headline_Form.category}}
+          <p class="text-danger" id="headlinecategoryerror"></p>
+          </div>
+          <div class="mb-3 terms_and_conditions">
+            <strong>Disclaimer:</strong>
+            <p class="text-justify">
+               The website owner does not verify the accuracy or reliability of news articles posted on this website. Administrators are solely responsible for ensuring the accuracy and reliability of the information they publish. Administrators bear full responsibility for any inaccuracies or misleading content in the articles they submit.
+            </p>
+            {{Headline_Form.is_acknowledge}}
+            <label class="form-check-label"><span class="text-danger">*</span>
+              I acknowledge that I have reviewed the disclaimer and hereby accept its terms and conditions.
+            </label><br>
+            <p class="text-danger" id="headlinecheckmarkerror"></p>      
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Post Headlines</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+        <!-- headlines form end -->

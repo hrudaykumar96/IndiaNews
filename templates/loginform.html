@@ -1,0 +1,36 @@
+        <!-- login form start -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="loginformModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form action="{% url 'loginuser' %}" method="post" id="form-login">{% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Login Here</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ login_user_form.username.id_for_label }}" class="form-label">{{ login_user_form.username.label }}</label><span class="text-danger">*</span>
+          {{login_user_form.username}}
+          <small class="text-danger" id="loginemailerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ login_user_form.password.id_for_label }}" class="form-label">{{ login_user_form.password.label }}</label><span class="text-danger">*</span>
+          {{login_user_form.password}}
+          <small class="text-danger" id="loginpassworderror"></small>
+          </div>          
+          <div class="forgot-passwd">
+            <input type="submit" value="Login" class="btn btn-primary">
+            <a href="" class="text-dark" data-bs-toggle="modal" data-bs-target="#resetformModal">Forgot Password</a>
+        </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#signupformModal">Create Account</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+        <!-- login form end -->

@@ -1,0 +1,55 @@
+       <!-- articles form start -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="articlesformModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <form action="{% url 'create_article' %}" method="post" enctype="multipart/form-data" id="articleform">{% csrf_token %}
+          {{ article_form.media }}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Article</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancel"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ article_form.title.id_for_label }}" class="form-label">{{ article_form.title.label }}</label><span class="text-danger">*</span>
+          {{article_form.title}}
+          <small class="text-danger" id="articletitleerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ article_form.description.id_for_label }}" class="form-label">{{ article_form.description.label }}</label><span class="text-danger">*</span>
+          {{article_form.description}}
+          <small class="text-danger" id="articledescriptionerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ article_form.image.id_for_label }}" class="form-label">{{ article_form.image.label }}</label><span class="text-danger">*</span>
+          {{article_form.image}}
+          <small class="text-danger" id="articlefileerror"></small>
+          </div>
+          <div class="mb-3">
+            <label for="{{ article_form.category.id_for_label }}" class="form-label">{{ article_form.category.label }}</label><span class="text-danger">*</span>
+          {{article_form.category}}
+          <small class="text-danger" id="articlecategoryerror"></small>
+          </div>
+          <div class="mb-3 terms_and_conditions">
+          <strong>Disclaimer:</strong>
+          <p class="text-justify">
+             The website owner does not verify the accuracy or reliability of news articles posted on this website. Administrators are solely responsible for ensuring the accuracy and reliability of the information they publish. Administrators bear full responsibility for any inaccuracies or misleading content in the articles they submit.
+          </p>
+          {{article_form.is_acknowledge}}
+          <label class="form-check-label"><span class="text-danger">*</span>
+            I acknowledge that I have reviewed the disclaimer and hereby accept its terms and conditions.
+          </label><br>
+          <small class="text-danger" id="articlecheckmarkerror"></small>          
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Post Article</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+        <!-- articles form end -->
